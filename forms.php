@@ -56,7 +56,7 @@ class Form {
 				if (isset($args['value'])) {
 					$options = explode(",", $args['value']) ;
 					foreach ($options as $key => $this->value) {
-					$this->value[] = '<option value="' . $this->value . '" />' ;
+					$this->value[] = '<option value="' . $this->value . '">' ;
 					}
 				}
 				$this->elements[] = '<input list="' . $id . '" />' . "\n" . ' <datalist id="' . $id . '">' . "\n" . ' ' . implode("\n", $this->value) . "\n" . ' </datalist>' ;
