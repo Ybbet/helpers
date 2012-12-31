@@ -20,6 +20,7 @@ tester l'existence des clés à l'aide de isset($arg['label']) ...
 class Form {
 	private $elements 	= array();
 	private $value ;
+	private $post_value ;
 	private $method = 'post' ;
 	private $errors = array() ;
 
@@ -84,54 +85,70 @@ class Form {
 		} // fin du args['tags']
 	}
 
+	public function addGeneral($args) {
+		if (is_array($args)) {
+			foreach ($$args as $key => $value) {
+				$this->elements[] = $value . "\n";
+			}
+		} else {
+			$this->elements[] = $args . "\n" ; 	
+		}
+
+	}
+
 	public function addInput($args) {
 		// $before = memory_get_usage() ;
 		if (isset($args['name'])) {
-			$name = $args['name'] ;
-			$labelFor = $name;
+			$name = ' name="' . $args['name'] . '"' ;
+			$labelFor = $args['name'];
 		}else {
-			$name = 'wo_name' ;
+			$name = ' name="wo_name"' ;
 			$labelFor = 'wo_name';
 		}
 		if (isset($args['type'])) {
-			$type = $args['type'] ;
+			$type = ' type="' . $args['type'] . '"' ;
 		} else {
-			$type = 'text' ;
-		}
-		if (isset($args['label'])) {
-			$label = $args['label'] ;
-		} else {
-			$label = '' ;
+			$type = 'type="text"' ;
 		}
 		if (isset($args['placeholder'])) {
-			$placeholder = $args['placeholder'] ;
+			$placeholder = ' placeholder="' . $args['placeholder'] . '"' ;
 		} else {
 			$placeholder = '' ;
 		}
-		if (isset($this->errors[$name])) {
-			$errors_bloc 	= '<p class="text-error">' . $this->errors[$name] . '</p>' ;
+		if (isset($this->errors[$args['name']])) {
+			$errors_bloc 	= '<p class="text-error">' . $this->errors[$args['name']] . '</p>' ;
 			$errors 		= 'error' ;
 		} else {
 			$errors 	= '' ;
 		}
 		if (isset($args['id'])) {
-			$id = $args['id'] ;
+			$id = ' id="' . $args['id'] . '"' ;
 		} else {
 			$id = '' ;
 		}
 		if (isset($args['class'])) {
-			$class = $args['class'] ;
+			$class = ' class="' . $args['class'] . '"' ;
 		} else {
 			$class = '' . $errors ;
 		}
+		if (isset($_POST[$args['name']])) {
+			$this->post_value = ' value ="' . $_POST[$args['name']] . '"' ;
+		} else {
+			$this->post_value = '' ;
+		}
 		if (isset($args['label']) && $args['label'] == 'oui') {
-			$this->elements[] = '<label for="' . $name . '">' . $label_value . " :</label>\n" ;
+			if (isset($args['label_value'])) {
+				$label_value = $args['label_value'] ;
+			} else {
+				$label_value = '' ;
+			}
+			$this->elements[] = '<label for="' . $args['name'] . '">' . $label_value . " :</label>\n" ;
 		}
 
 		// $after = memory_get_usage() ;
 		// $difference = $after - $before ;
 
-		$this->elements[] = '<input type="' . $type . '" class="' . $class . '" name="' . $name . '" placeholder="' . $placeholder . '" id="' . $id . '" />' . "\n" ; 	
+		$this->elements[] = '<input' . $type . $class . $name . $placeholder . $id . $this->post_value . ' />' . "\n" ; 	
 		if (isset($errors_bloc)) {
 			$this->elements[] = $errors_bloc ;
 		}
@@ -150,8 +167,8 @@ class Form {
 		} else {
 			$type = 'number' ;
 		}
-		if (isset($this->errors[$name])) {
-			$errors_bloc 	= '<p class="text-error">' . $this->errors[$name] . '</p>' ;
+		if (isset($this->errors[$args['name']])) {
+			$errors_bloc 	= '<p class="text-error">' . $this->errors[$args['name']] . '</p>' ;
 			$errors 		= 'error' ;
 		} else {
 			$errors 	= '' ;
@@ -190,7 +207,13 @@ class Form {
 			$this->elements[] = '<label for="' . $name . '">' . $label_value . " :</label>\n" ;
 		}
 
-		$this->elements[] = '<input type="' . $type . '" class="' . $class . '" name="' . $name . '" min="' . $min . '" max="' . $max . '" step="' . $step . '" id="' . $id . '" />' . "\n" ; 	
+		if (isset($_POST[$args['name']])) {
+			$this->post_value = ' value ="' . $_POST[$args['name']] . '"' ;
+		} else {
+			$this->post_value = '' ;
+		}
+
+		$this->elements[] = '<input type="' . $type . '" class="' . $class . '" name="' . $name . '" min="' . $min . '" max="' . $max . '" step="' . $step . '" id="' . $id . '"' . $this->post_value . ' />' . "\n" ; 	
 		if (isset($errors_bloc)) {
 			$this->elements[] = $errors_bloc ;
 		}
@@ -205,23 +228,23 @@ class Form {
 			$labelFor = 'wo_name';
 		}
 		if (isset($args['placeholder'])) {
-			$placeholder = $args['placeholder'] ;
+			$placeholder = ' placeholder="' . $args['placeholder'] . '"' ;
 		} else {
 			$placeholder = '' ;
 		}
-		if (isset($this->errors[$name])) {
-			$errors_bloc 	= '<p class="text-error">' . $this->errors[$name] . '</p>' ;
+		if (isset($this->errors[$args['name']])) {
+			$errors_bloc 	= '<p class="text-error">' . $this->errors[$args['name']] . '</p>' ;
 			$errors 		= 'error' ;
 		} else {
 			$errors 	= '' ;
 		}
 		if (isset($args['class'])) {
-			$class = $args['class'] ;
+			$class = ' class="' . $args['class'] . $errors . '"'  ;
 		} else {
 			$class = '' . $errors ;
 		}
 		if (isset($args['id'])) {
-			$id = $args['id'] ;
+			$id =  ' id="' . $args['id'] . '"' ;
 		} else {
 			$id = '' ;
 		}
@@ -244,7 +267,7 @@ class Form {
 			$this->elements[] = '<label for="' . $name . '">' . $label_value . " :</label>\n" ;
 		}
 
-		$this->elements[] = '<output class="' . $class . '" name="' . $name . '" id="' . $id . '" for="' . $for . '" form="' . $form . '" />' . "\n" ; 	
+		$this->elements[] = '<output name="' . $name . '" for="' . $for . '" form="' . $form . '"' . $class . $id . '  />' . "\n" ; 	
 		if (isset($errors_bloc)) {
 			$this->elements[] = $errors_bloc ;
 		}
@@ -263,21 +286,26 @@ class Form {
 		} else {
 			$list = '';
 		}
+		if (isset($args['type'])) {
+			$type = $args['type'] ;
+		} else {
+			$type = ' type="text"' ;
+		}
 		if (isset($args['name'])) {
 			$name = $args['name'] ;
 		} else {
 			$name = '' ;
 		}
 		if (isset($args['class'])) {
-			$class = $args['class'] ;
+			$class = ' class="' . $args['class'] . '"' ;
 		} else {
 			$class = '' ;
 		}
 		if (isset($args['label']) && $args['label'] == 'oui') {
-			$this->elements[] = '<label for="' . $name . '">' . ucfirst($name) . " :</label>\n"
+			$this->elements[] = '<label for="' . $name . '">' . ucfirst($name) . " :</label>\n" ;
 		}
 		if (isset($args['placeholder'])) {
-			$placeholder = $args['placeholder'] ;
+			$placeholder = ' placeholder="' .$args['placeholder'] . '"' ;
 		} else {
 			$placeholder = '' ;
 		}
@@ -287,12 +315,12 @@ class Form {
 			$this->value[] = '<option value="' . $value . '">' ;
 			}
 		}
-		$this->elements[] = '<input list="' . $list . '" name="' . $name . '" class="' . $class . '" placeholder="' . $placeholder . '" />' . "\n" 
+		$this->elements[] = '<input list="' . $list . '" name="' . $name . '"' . $type . $class . $placeholder . '/>' . "\n" 
 		. ' <datalist id="' . $list . '">' . "\n" 
 		. ' ' . implode("\n", $this->value) . "\n" 
 		. ' </datalist>' ;
-		if (isset($this->errors[$name])) {
-			$this->elements[] = '<p class="text-error">' . $this->errors[$name] . '</p>' ;
+		if (isset($this->errors[$args['name']])) {
+			$this->elements[] = '<p class="text-error">' . $this->errors[$args['name']] . '</p>' ;
 		}
 	}
 
@@ -308,9 +336,11 @@ class Form {
 			$id = $args['id'] ;
 		}
 		if (isset($args['class'])) {
-			$class = $args['class'] ;
+			$class = ' class="' . $args['class'] . '"'  ;
+		} else {
+			$class = '' ;
 		}
-		$this->elements[] = '<form method="' . $method . '" action="' . $action . '" id="' . $id . '" class="' . $class . '">' ;
+		$this->elements[] = '<form method="' . $method . '" action="' . $action . '" id="' . $id . '"' . $class . ' >' ;
 	}
 
 	public function closeForm() {
@@ -340,26 +370,23 @@ class Form {
 			$name = '' ;
 		}
 		if (isset($args['value'])) {
-			$this->value = $args['value'] ;
+			$this->value = ' value="' . $args['value'] . '"' ;
 		} else {
 			$this->value = '' ;
 		}
 		if (isset($args['id'])) {
-			$id = $args['id'] ;
+			$id = ' id="' . $args['id'] . '"' ;
 		}else {
 			$id = '';
 		}
 		if (isset($args['class'])) {
-			$class = $args['class'] ;
+			$class = ' class="' . $args['class'] . '"' ;
 		} else {
 			$class = '' ;
 		}
 
 		$type = 'submit' ;
-		$this->elements[] = '<input type="' . $type .'" name="' . $name .'" value="' . $this->value .'" id="' . $id . '" class="' . $class . '" />' . "\n" ;
-		if (isset($this->errors[$name])) {
-			$this->elements[] = '<p class="text-error">' . $this->errors[$name] . '</p>' ;
-		}
+		$this->elements[] = '<input type="' . $type .'" name="' . $name .'"' . $this->value . $id . $class . ' />' . "\n" ;
 	}
 
 	public function render() {
@@ -382,12 +409,13 @@ if (!empty($_POST)) {
 	}
 }
 
-$form->addForm( array('method' => 'post', 'action' => $_SERVER['PHP_SELF'], 'id' => 'contact', 'class' => 'form-horizontal') ) ;
+$form->addForm( array('method' => 'post', 'action' => $_SERVER['PHP_SELF'], 'id' => 'contact' ) ) ;
 $form->addFieldset() ;
+// $form->addGeneral( array()) ;
 $form->addLegend( array('value' => 'Civilité')) ;
-$form->addInput( array( 'name' => 'nom', 'type' => 'text', 'label' => 'Votre nom', 'placeholder' => 'Votre nom'));
-$form->addInput( array( 'name' => 'prenom', 'type' => 'text', 'label' => 'Votre Prénom', 'placeholder' => 'Votre prénom'));
-$form->addDatalist( array( 'list' => 'pays', 'name' =>'pays', 'value' => 'France,Etats-Unis', 'placeholder' => 'Votre pays'));
+$form->addInput( array( 'label' => 'oui', 'name' => 'nom', 'type' => 'text', 'label_value' => 'Votre nom', 'placeholder' => 'Votre nom'));
+$form->addInput( array( 'label' => 'oui', 'name' => 'prenom', 'type' => 'text', 'label_value' => 'Votre Prénom', 'placeholder' => 'Votre prénom'));
+$form->addDatalist( array( 'list' => 'pays', 'name' =>'pays', 'value' => 'France,Etats-Unis', 'placeholder' => 'Votre pays', 'label' => 'oui'));
 $form->closeFieldset() ;
 $form->addSubmit(array('value' => 'Envoyer', 'class' => 'btn')) ;
 $form->closeForm() ;
